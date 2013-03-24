@@ -1,3 +1,65 @@
+  Traffic analysis system (in search of a better name)
+
+This is a small project I did to track my traffic based on the traffic
+of the web server - bytes sent, packets sent, tcp retransmits. The code
+is very simple and should be easy to understand, but here are some docs,
+anyway.
+
+The DB structure has a few logical components:
+- routers - for each router that handles the traffic from the web servers
+there's an entry in the "router" table, with the network it serves.
+! see the note about bgpupd.sh below
+
+- traffic type - there's also an entry for each type of traffic in the 
+"traffic" table. This can be set in the originator of the udp packets,
+probably on a per-vhost or anything basis (in another incarnation of the
+code ther was a check if the file was an video file and that was another
+type of traffic).
+
+- current routing table - in the "pfxtmp" table, for each router there's
+its full routing table (prefix and ASpath).
+
+- current traffic - in the "iptraf" table there's an entry for each
+prefix/router/traffic type combination, that gets updated by one of the
+cron scripts.
+
+- historical data - in the "iptraf_arch" table there's a dump of the
+data from the "iptraf" table each hour, with the rows with zero traffic
+removed.
+
+- country - there's a table "cntry" with all the prefixes for every country
+that gets updated by another script, with data from http://ip.ludost.net/
+(which is a geolocation db based on the RIR databases).
+
+- there are two aggregate tables, "iptraf_cn" (per-country data)
+and "iptraf_dt" (per-asn data).
+
+NOTE: aspath field in the DB is only 255 chars, should be fixed.
+
+The workflow looks like this:
+
+- cron/countryupd.sh updates the table with the countries
+- cron/bgpupd.sh updates the prefixes for the router. It needs a quagga
+installation, and usually one quagga per router (most of the time this
+means another machine). I didn't have the time to try making something
+with views and having only one quagga to take the data from all routers.
+  It uses a very (badly) stripped down version of the bgpdump tool from
+RIPE.
+- cron/processdwlog.sh moves the current log, sends HUP to the ipdwl
+daemon (so it reopens the log), processes it into queries and sends
+them in the db. It uses the readlog php script, which aggregates the
+data per ip/router/traffic triplet in separate queries.
+
+- on the other side, the module in the web server (nginx or something
+else) for each request takes the information from the tcp_info struct
+(to get the retransmits), creates an UDP packet, signs it with SHA1
+and sends it to the ipdwl server.
+- the ipdwl server daemon receives the packets and writes them to a log
+file.
+
+
+(brief) Installation instructions:
+
 Install postgres, dev
 
 Install ip4r http://pgfoundry.org/projects/ip4r/
