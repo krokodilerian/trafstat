@@ -76,10 +76,8 @@ install quagga
 give someone access to the quaggavty and quagga groups to run bgpupd from
 configure bgp neighbor
 
-replace SOMESECRET
+compile and install bgpdump in INSTDIR.
 
-replace LOGDIR
-
-replace INSTDIR
+In all the sources grep for and replace: SOMESECRET, LOGDIR and INSTDIR.
 
 replace IP.IP.IP.IP with the ip of the server that will listen
