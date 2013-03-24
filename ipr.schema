@@ -1,0 +1,1855 @@
+--
+-- PostgreSQL database dump
+--
+BEGIN;
+
+SET statement_timeout = 0;
+SET client_encoding = 'SQL_ASCII';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: ip4; Type: SHELL TYPE; Schema: public; Owner: root
+--
+
+CREATE TYPE ip4;
+
+
+--
+-- Name: ip4_in(cstring); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_in(cstring) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_in';
+
+
+ALTER FUNCTION public.ip4_in(cstring) OWNER TO root;
+
+--
+-- Name: ip4_out(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_out(ip4) RETURNS cstring
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_out';
+
+
+ALTER FUNCTION public.ip4_out(ip4) OWNER TO root;
+
+--
+-- Name: ip4_recv(internal); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_recv(internal) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_recv';
+
+
+ALTER FUNCTION public.ip4_recv(internal) OWNER TO root;
+
+--
+-- Name: ip4_send(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_send(ip4) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_send';
+
+
+ALTER FUNCTION public.ip4_send(ip4) OWNER TO root;
+
+--
+-- Name: ip4; Type: TYPE; Schema: public; Owner: root
+--
+
+CREATE TYPE ip4 (
+    INTERNALLENGTH = 4,
+    INPUT = ip4_in,
+    OUTPUT = ip4_out,
+    RECEIVE = ip4_recv,
+    SEND = ip4_send,
+    ALIGNMENT = int4,
+    STORAGE = plain,
+    PASSEDBYVALUE
+);
+
+
+ALTER TYPE public.ip4 OWNER TO root;
+
+--
+-- Name: TYPE ip4; Type: COMMENT; Schema: public; Owner: root
+--
+
+COMMENT ON TYPE ip4 IS 'IPv4 address ''#.#.#.#''';
+
+
+--
+-- Name: ip4r; Type: SHELL TYPE; Schema: public; Owner: root
+--
+
+CREATE TYPE ip4r;
+
+
+--
+-- Name: ip4r_in(cstring); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_in(cstring) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_in';
+
+
+ALTER FUNCTION public.ip4r_in(cstring) OWNER TO root;
+
+--
+-- Name: ip4r_out(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_out(ip4r) RETURNS cstring
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_out';
+
+
+ALTER FUNCTION public.ip4r_out(ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_recv(internal); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_recv(internal) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_recv';
+
+
+ALTER FUNCTION public.ip4r_recv(internal) OWNER TO root;
+
+--
+-- Name: ip4r_send(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_send(ip4r) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_send';
+
+
+ALTER FUNCTION public.ip4r_send(ip4r) OWNER TO root;
+
+--
+-- Name: ip4r; Type: TYPE; Schema: public; Owner: root
+--
+
+CREATE TYPE ip4r (
+    INTERNALLENGTH = 8,
+    INPUT = ip4r_in,
+    OUTPUT = ip4r_out,
+    RECEIVE = ip4r_recv,
+    SEND = ip4r_send,
+    ELEMENT = ip4,
+    ALIGNMENT = int4,
+    STORAGE = plain
+);
+
+
+ALTER TYPE public.ip4r OWNER TO root;
+
+--
+-- Name: TYPE ip4r; Type: COMMENT; Schema: public; Owner: root
+--
+
+COMMENT ON TYPE ip4r IS 'IPv4 range ''#.#.#.#-#.#.#.#'' or ''#.#.#.#/#'' or ''#.#.#.#''';
+
+
+--
+-- Name: cidr(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION cidr(ip4) RETURNS cidr
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cast_to_cidr';
+
+
+ALTER FUNCTION public.cidr(ip4) OWNER TO root;
+
+--
+-- Name: cidr(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION cidr(ip4r) RETURNS cidr
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_cast_to_cidr';
+
+
+ALTER FUNCTION public.cidr(ip4r) OWNER TO root;
+
+--
+-- Name: gip4r_compress(internal); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION gip4r_compress(internal) RETURNS internal
+    LANGUAGE c
+    AS '$libdir/ip4r', 'gip4r_compress';
+
+
+ALTER FUNCTION public.gip4r_compress(internal) OWNER TO root;
+
+--
+-- Name: gip4r_consistent(internal, ip4r, integer); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION gip4r_consistent(internal, ip4r, integer) RETURNS boolean
+    LANGUAGE c
+    AS '$libdir/ip4r', 'gip4r_consistent';
+
+
+ALTER FUNCTION public.gip4r_consistent(internal, ip4r, integer) OWNER TO root;
+
+--
+-- Name: gip4r_decompress(internal); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION gip4r_decompress(internal) RETURNS internal
+    LANGUAGE c
+    AS '$libdir/ip4r', 'gip4r_decompress';
+
+
+ALTER FUNCTION public.gip4r_decompress(internal) OWNER TO root;
+
+--
+-- Name: gip4r_penalty(internal, internal, internal); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION gip4r_penalty(internal, internal, internal) RETURNS internal
+    LANGUAGE c STRICT
+    AS '$libdir/ip4r', 'gip4r_penalty';
+
+
+ALTER FUNCTION public.gip4r_penalty(internal, internal, internal) OWNER TO root;
+
+--
+-- Name: gip4r_picksplit(internal, internal); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION gip4r_picksplit(internal, internal) RETURNS internal
+    LANGUAGE c
+    AS '$libdir/ip4r', 'gip4r_picksplit';
+
+
+ALTER FUNCTION public.gip4r_picksplit(internal, internal) OWNER TO root;
+
+--
+-- Name: gip4r_same(ip4r, ip4r, internal); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION gip4r_same(ip4r, ip4r, internal) RETURNS internal
+    LANGUAGE c
+    AS '$libdir/ip4r', 'gip4r_same';
+
+
+ALTER FUNCTION public.gip4r_same(ip4r, ip4r, internal) OWNER TO root;
+
+--
+-- Name: gip4r_union(internal, internal); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION gip4r_union(internal, internal) RETURNS ip4r
+    LANGUAGE c
+    AS '$libdir/ip4r', 'gip4r_union';
+
+
+ALTER FUNCTION public.gip4r_union(internal, internal) OWNER TO root;
+
+--
+-- Name: ip4(inet); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4(inet) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cast_from_inet';
+
+
+ALTER FUNCTION public.ip4(inet) OWNER TO root;
+
+--
+-- Name: ip4(text); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4(text) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cast_from_text';
+
+
+ALTER FUNCTION public.ip4(text) OWNER TO root;
+
+--
+-- Name: ip4(bigint); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4(bigint) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cast_from_bigint';
+
+
+ALTER FUNCTION public.ip4(bigint) OWNER TO root;
+
+--
+-- Name: ip4(double precision); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4(double precision) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cast_from_double';
+
+
+ALTER FUNCTION public.ip4(double precision) OWNER TO root;
+
+--
+-- Name: ip4_and(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_and(ip4, ip4) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_and';
+
+
+ALTER FUNCTION public.ip4_and(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_cmp(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_cmp(ip4, ip4) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cmp';
+
+
+ALTER FUNCTION public.ip4_cmp(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_contained_by(ip4, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_contained_by(ip4, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_contained_by';
+
+
+ALTER FUNCTION public.ip4_contained_by(ip4, ip4r) OWNER TO root;
+
+--
+-- Name: ip4_contains(ip4r, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_contains(ip4r, ip4) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_contains';
+
+
+ALTER FUNCTION public.ip4_contains(ip4r, ip4) OWNER TO root;
+
+--
+-- Name: ip4_eq(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_eq(ip4, ip4) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_eq';
+
+
+ALTER FUNCTION public.ip4_eq(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_ge(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_ge(ip4, ip4) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_ge';
+
+
+ALTER FUNCTION public.ip4_ge(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_gt(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_gt(ip4, ip4) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_gt';
+
+
+ALTER FUNCTION public.ip4_gt(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_le(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_le(ip4, ip4) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_le';
+
+
+ALTER FUNCTION public.ip4_le(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_lt(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_lt(ip4, ip4) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_lt';
+
+
+ALTER FUNCTION public.ip4_lt(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_minus_bigint(ip4, bigint); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_minus_bigint(ip4, bigint) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_minus_bigint';
+
+
+ALTER FUNCTION public.ip4_minus_bigint(ip4, bigint) OWNER TO root;
+
+--
+-- Name: ip4_minus_int(ip4, integer); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_minus_int(ip4, integer) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_minus_int';
+
+
+ALTER FUNCTION public.ip4_minus_int(ip4, integer) OWNER TO root;
+
+--
+-- Name: ip4_minus_ip4(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_minus_ip4(ip4, ip4) RETURNS bigint
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_minus_ip4';
+
+
+ALTER FUNCTION public.ip4_minus_ip4(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_neq(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_neq(ip4, ip4) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_neq';
+
+
+ALTER FUNCTION public.ip4_neq(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_net_lower(ip4, integer); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_net_lower(ip4, integer) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_net_lower';
+
+
+ALTER FUNCTION public.ip4_net_lower(ip4, integer) OWNER TO root;
+
+--
+-- Name: ip4_net_upper(ip4, integer); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_net_upper(ip4, integer) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_net_upper';
+
+
+ALTER FUNCTION public.ip4_net_upper(ip4, integer) OWNER TO root;
+
+--
+-- Name: ip4_netmask(integer); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_netmask(integer) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_netmask';
+
+
+ALTER FUNCTION public.ip4_netmask(integer) OWNER TO root;
+
+--
+-- Name: ip4_not(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_not(ip4) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_not';
+
+
+ALTER FUNCTION public.ip4_not(ip4) OWNER TO root;
+
+--
+-- Name: ip4_or(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_or(ip4, ip4) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_or';
+
+
+ALTER FUNCTION public.ip4_or(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4_plus_bigint(ip4, bigint); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_plus_bigint(ip4, bigint) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_plus_bigint';
+
+
+ALTER FUNCTION public.ip4_plus_bigint(ip4, bigint) OWNER TO root;
+
+--
+-- Name: ip4_plus_int(ip4, integer); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_plus_int(ip4, integer) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_plus_int';
+
+
+ALTER FUNCTION public.ip4_plus_int(ip4, integer) OWNER TO root;
+
+--
+-- Name: ip4_xor(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4_xor(ip4, ip4) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_xor';
+
+
+ALTER FUNCTION public.ip4_xor(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4hash(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4hash(ip4) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4hash';
+
+
+ALTER FUNCTION public.ip4hash(ip4) OWNER TO root;
+
+--
+-- Name: ip4r(cidr); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r(cidr) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_cast_from_cidr';
+
+
+ALTER FUNCTION public.ip4r(cidr) OWNER TO root;
+
+--
+-- Name: ip4r(text); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r(text) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_cast_from_text';
+
+
+ALTER FUNCTION public.ip4r(text) OWNER TO root;
+
+--
+-- Name: ip4r(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r(ip4) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_cast_from_ip4';
+
+
+ALTER FUNCTION public.ip4r(ip4) OWNER TO root;
+
+--
+-- Name: ip4r(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r(ip4, ip4) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_from_ip4s';
+
+
+ALTER FUNCTION public.ip4r(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4r_cmp(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_cmp(ip4r, ip4r) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_cmp';
+
+
+ALTER FUNCTION public.ip4r_cmp(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_contained_by(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_contained_by(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_contained_by';
+
+
+ALTER FUNCTION public.ip4r_contained_by(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_contained_by_strict(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_contained_by_strict(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_contained_by_strict';
+
+
+ALTER FUNCTION public.ip4r_contained_by_strict(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_contains(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_contains(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_contains';
+
+
+ALTER FUNCTION public.ip4r_contains(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_contains_strict(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_contains_strict(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_contains_strict';
+
+
+ALTER FUNCTION public.ip4r_contains_strict(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_eq(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_eq(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_eq';
+
+
+ALTER FUNCTION public.ip4r_eq(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_ge(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_ge(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_ge';
+
+
+ALTER FUNCTION public.ip4r_ge(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_gt(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_gt(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_gt';
+
+
+ALTER FUNCTION public.ip4r_gt(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_inter(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_inter(ip4r, ip4r) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_inter';
+
+
+ALTER FUNCTION public.ip4r_inter(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_le(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_le(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_le';
+
+
+ALTER FUNCTION public.ip4r_le(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_left_of(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_left_of(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_left_of';
+
+
+ALTER FUNCTION public.ip4r_left_of(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_left_overlap(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_left_overlap(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_left_overlap';
+
+
+ALTER FUNCTION public.ip4r_left_overlap(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_lt(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_lt(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_lt';
+
+
+ALTER FUNCTION public.ip4r_lt(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_neq(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_neq(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_neq';
+
+
+ALTER FUNCTION public.ip4r_neq(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_net_mask(ip4, ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_net_mask(ip4, ip4) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_net_mask';
+
+
+ALTER FUNCTION public.ip4r_net_mask(ip4, ip4) OWNER TO root;
+
+--
+-- Name: ip4r_net_prefix(ip4, integer); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_net_prefix(ip4, integer) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_net_prefix';
+
+
+ALTER FUNCTION public.ip4r_net_prefix(ip4, integer) OWNER TO root;
+
+--
+-- Name: ip4r_overlaps(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_overlaps(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_overlaps';
+
+
+ALTER FUNCTION public.ip4r_overlaps(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_right_of(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_right_of(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_right_of';
+
+
+ALTER FUNCTION public.ip4r_right_of(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_right_overlap(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_right_overlap(ip4r, ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_right_overlap';
+
+
+ALTER FUNCTION public.ip4r_right_overlap(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_size(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_size(ip4r) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_size';
+
+
+ALTER FUNCTION public.ip4r_size(ip4r) OWNER TO root;
+
+--
+-- Name: ip4r_union(ip4r, ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4r_union(ip4r, ip4r) RETURNS ip4r
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_union';
+
+
+ALTER FUNCTION public.ip4r_union(ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: ip4rhash(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION ip4rhash(ip4r) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4rhash';
+
+
+ALTER FUNCTION public.ip4rhash(ip4r) OWNER TO root;
+
+--
+-- Name: is_cidr(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION is_cidr(ip4r) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_is_cidr';
+
+
+ALTER FUNCTION public.is_cidr(ip4r) OWNER TO root;
+
+--
+-- Name: lower(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION lower(ip4r) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_lower';
+
+
+ALTER FUNCTION public.lower(ip4r) OWNER TO root;
+
+--
+-- Name: text(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION text(ip4) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cast_to_text';
+
+
+ALTER FUNCTION public.text(ip4) OWNER TO root;
+
+--
+-- Name: text(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION text(ip4r) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_cast_to_text';
+
+
+ALTER FUNCTION public.text(ip4r) OWNER TO root;
+
+--
+-- Name: to_bigint(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION to_bigint(ip4) RETURNS bigint
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cast_to_bigint';
+
+
+ALTER FUNCTION public.to_bigint(ip4) OWNER TO root;
+
+--
+-- Name: to_double(ip4); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION to_double(ip4) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4_cast_to_double';
+
+
+ALTER FUNCTION public.to_double(ip4) OWNER TO root;
+
+--
+-- Name: upper(ip4r); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION upper(ip4r) RETURNS ip4
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/ip4r', 'ip4r_upper';
+
+
+ALTER FUNCTION public.upper(ip4r) OWNER TO root;
+
+--
+-- Name: #; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR # (
+    PROCEDURE = ip4_xor,
+    LEFTARG = ip4,
+    RIGHTARG = ip4
+);
+
+
+ALTER OPERATOR public.# (ip4, ip4) OWNER TO root;
+
+--
+-- Name: &; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR & (
+    PROCEDURE = ip4_and,
+    LEFTARG = ip4,
+    RIGHTARG = ip4
+);
+
+
+ALTER OPERATOR public.& (ip4, ip4) OWNER TO root;
+
+--
+-- Name: &&; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR && (
+    PROCEDURE = ip4r_overlaps,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = &&,
+    RESTRICT = areasel,
+    JOIN = areajoinsel
+);
+
+
+ALTER OPERATOR public.&& (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: &<<; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR &<< (
+    PROCEDURE = ip4r_left_overlap,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    RESTRICT = positionsel,
+    JOIN = positionjoinsel
+);
+
+
+ALTER OPERATOR public.&<< (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: &>>; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR &>> (
+    PROCEDURE = ip4r_right_overlap,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    RESTRICT = positionsel,
+    JOIN = positionjoinsel
+);
+
+
+ALTER OPERATOR public.&>> (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: +; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR + (
+    PROCEDURE = ip4_plus_int,
+    LEFTARG = ip4,
+    RIGHTARG = integer
+);
+
+
+ALTER OPERATOR public.+ (ip4, integer) OWNER TO root;
+
+--
+-- Name: +; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR + (
+    PROCEDURE = ip4_plus_bigint,
+    LEFTARG = ip4,
+    RIGHTARG = bigint
+);
+
+
+ALTER OPERATOR public.+ (ip4, bigint) OWNER TO root;
+
+--
+-- Name: -; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR - (
+    PROCEDURE = ip4_minus_int,
+    LEFTARG = ip4,
+    RIGHTARG = integer
+);
+
+
+ALTER OPERATOR public.- (ip4, integer) OWNER TO root;
+
+--
+-- Name: -; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR - (
+    PROCEDURE = ip4_minus_bigint,
+    LEFTARG = ip4,
+    RIGHTARG = bigint
+);
+
+
+ALTER OPERATOR public.- (ip4, bigint) OWNER TO root;
+
+--
+-- Name: -; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR - (
+    PROCEDURE = ip4_minus_ip4,
+    LEFTARG = ip4,
+    RIGHTARG = ip4
+);
+
+
+ALTER OPERATOR public.- (ip4, ip4) OWNER TO root;
+
+--
+-- Name: <; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR < (
+    PROCEDURE = ip4_lt,
+    LEFTARG = ip4,
+    RIGHTARG = ip4,
+    COMMUTATOR = >,
+    NEGATOR = >=,
+    RESTRICT = scalarltsel,
+    JOIN = scalarltjoinsel
+);
+
+
+ALTER OPERATOR public.< (ip4, ip4) OWNER TO root;
+
+--
+-- Name: <; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR < (
+    PROCEDURE = ip4r_lt,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = >,
+    NEGATOR = >=,
+    RESTRICT = scalarltsel,
+    JOIN = scalarltjoinsel
+);
+
+
+ALTER OPERATOR public.< (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: <<; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR << (
+    PROCEDURE = ip4r_contained_by_strict,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = >>,
+    RESTRICT = contsel,
+    JOIN = contjoinsel
+);
+
+
+ALTER OPERATOR public.<< (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: <<<; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR <<< (
+    PROCEDURE = ip4r_left_of,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = >>>,
+    RESTRICT = positionsel,
+    JOIN = positionjoinsel
+);
+
+
+ALTER OPERATOR public.<<< (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: <<=; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR <<= (
+    PROCEDURE = ip4r_contained_by,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = >>=,
+    RESTRICT = contsel,
+    JOIN = contjoinsel
+);
+
+
+ALTER OPERATOR public.<<= (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: <=; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR <= (
+    PROCEDURE = ip4_le,
+    LEFTARG = ip4,
+    RIGHTARG = ip4,
+    COMMUTATOR = >=,
+    NEGATOR = >,
+    RESTRICT = scalarltsel,
+    JOIN = scalarltjoinsel
+);
+
+
+ALTER OPERATOR public.<= (ip4, ip4) OWNER TO root;
+
+--
+-- Name: <=; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR <= (
+    PROCEDURE = ip4r_le,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = >=,
+    NEGATOR = >,
+    RESTRICT = scalarltsel,
+    JOIN = scalarltjoinsel
+);
+
+
+ALTER OPERATOR public.<= (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: <>; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR <> (
+    PROCEDURE = ip4_neq,
+    LEFTARG = ip4,
+    RIGHTARG = ip4,
+    COMMUTATOR = <>,
+    NEGATOR = =,
+    RESTRICT = neqsel,
+    JOIN = neqjoinsel
+);
+
+
+ALTER OPERATOR public.<> (ip4, ip4) OWNER TO root;
+
+--
+-- Name: <>; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR <> (
+    PROCEDURE = ip4r_neq,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = <>,
+    NEGATOR = =,
+    RESTRICT = neqsel,
+    JOIN = neqjoinsel
+);
+
+
+ALTER OPERATOR public.<> (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: =; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR = (
+    PROCEDURE = ip4_eq,
+    LEFTARG = ip4,
+    RIGHTARG = ip4,
+    COMMUTATOR = =,
+    NEGATOR = <>,
+    MERGES,
+    HASHES,
+    RESTRICT = eqsel,
+    JOIN = eqjoinsel
+);
+
+
+ALTER OPERATOR public.= (ip4, ip4) OWNER TO root;
+
+--
+-- Name: =; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR = (
+    PROCEDURE = ip4r_eq,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = =,
+    NEGATOR = <>,
+    MERGES,
+    HASHES,
+    RESTRICT = eqsel,
+    JOIN = eqjoinsel
+);
+
+
+ALTER OPERATOR public.= (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: >; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR > (
+    PROCEDURE = ip4_gt,
+    LEFTARG = ip4,
+    RIGHTARG = ip4,
+    COMMUTATOR = <,
+    NEGATOR = <=,
+    RESTRICT = scalargtsel,
+    JOIN = scalargtjoinsel
+);
+
+
+ALTER OPERATOR public.> (ip4, ip4) OWNER TO root;
+
+--
+-- Name: >; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR > (
+    PROCEDURE = ip4r_gt,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = <,
+    NEGATOR = <=,
+    RESTRICT = scalargtsel,
+    JOIN = scalargtjoinsel
+);
+
+
+ALTER OPERATOR public.> (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: >=; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR >= (
+    PROCEDURE = ip4_ge,
+    LEFTARG = ip4,
+    RIGHTARG = ip4,
+    COMMUTATOR = <=,
+    NEGATOR = <,
+    RESTRICT = scalargtsel,
+    JOIN = scalargtjoinsel
+);
+
+
+ALTER OPERATOR public.>= (ip4, ip4) OWNER TO root;
+
+--
+-- Name: >=; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR >= (
+    PROCEDURE = ip4r_ge,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = <=,
+    NEGATOR = <,
+    RESTRICT = scalargtsel,
+    JOIN = scalargtjoinsel
+);
+
+
+ALTER OPERATOR public.>= (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: >>; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR >> (
+    PROCEDURE = ip4r_contains_strict,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = <<,
+    RESTRICT = contsel,
+    JOIN = contjoinsel
+);
+
+
+ALTER OPERATOR public.>> (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: >>=; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR >>= (
+    PROCEDURE = ip4r_contains,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = <<=,
+    RESTRICT = contsel,
+    JOIN = contjoinsel
+);
+
+
+ALTER OPERATOR public.>>= (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: >>>; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR >>> (
+    PROCEDURE = ip4r_right_of,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = <<<,
+    RESTRICT = positionsel,
+    JOIN = positionjoinsel
+);
+
+
+ALTER OPERATOR public.>>> (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: @; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR @ (
+    PROCEDURE = ip4r_contains,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = ~,
+    RESTRICT = contsel,
+    JOIN = contjoinsel
+);
+
+
+ALTER OPERATOR public.@ (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: |; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR | (
+    PROCEDURE = ip4_or,
+    LEFTARG = ip4,
+    RIGHTARG = ip4
+);
+
+
+ALTER OPERATOR public.| (ip4, ip4) OWNER TO root;
+
+--
+-- Name: ~; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR ~ (
+    PROCEDURE = ip4_not,
+    RIGHTARG = ip4
+);
+
+
+ALTER OPERATOR public.~ (NONE, ip4) OWNER TO root;
+
+--
+-- Name: ~; Type: OPERATOR; Schema: public; Owner: root
+--
+
+CREATE OPERATOR ~ (
+    PROCEDURE = ip4r_contained_by,
+    LEFTARG = ip4r,
+    RIGHTARG = ip4r,
+    COMMUTATOR = @,
+    RESTRICT = contsel,
+    JOIN = contjoinsel
+);
+
+
+ALTER OPERATOR public.~ (ip4r, ip4r) OWNER TO root;
+
+--
+-- Name: btree_ip4_ops; Type: OPERATOR CLASS; Schema: public; Owner: root
+--
+
+CREATE OPERATOR CLASS btree_ip4_ops
+    DEFAULT FOR TYPE ip4 USING btree AS
+    OPERATOR 1 <(ip4,ip4) ,
+    OPERATOR 2 <=(ip4,ip4) ,
+    OPERATOR 3 =(ip4,ip4) ,
+    OPERATOR 4 >=(ip4,ip4) ,
+    OPERATOR 5 >(ip4,ip4) ,
+    FUNCTION 1 ip4_cmp(ip4,ip4);
+
+
+ALTER OPERATOR CLASS public.btree_ip4_ops USING btree OWNER TO root;
+
+--
+-- Name: btree_ip4r_ops; Type: OPERATOR CLASS; Schema: public; Owner: root
+--
+
+CREATE OPERATOR CLASS btree_ip4r_ops
+    DEFAULT FOR TYPE ip4r USING btree AS
+    OPERATOR 1 <(ip4r,ip4r) ,
+    OPERATOR 2 <=(ip4r,ip4r) ,
+    OPERATOR 3 =(ip4r,ip4r) ,
+    OPERATOR 4 >=(ip4r,ip4r) ,
+    OPERATOR 5 >(ip4r,ip4r) ,
+    FUNCTION 1 ip4r_cmp(ip4r,ip4r);
+
+
+ALTER OPERATOR CLASS public.btree_ip4r_ops USING btree OWNER TO root;
+
+--
+-- Name: gist_ip4r_ops; Type: OPERATOR CLASS; Schema: public; Owner: root
+--
+
+CREATE OPERATOR CLASS gist_ip4r_ops
+    DEFAULT FOR TYPE ip4r USING gist AS
+    OPERATOR 1 >>=(ip4r,ip4r) ,
+    OPERATOR 2 <<=(ip4r,ip4r) ,
+    OPERATOR 3 >>(ip4r,ip4r) ,
+    OPERATOR 4 <<(ip4r,ip4r) ,
+    OPERATOR 5 &&(ip4r,ip4r) ,
+    OPERATOR 6 =(ip4r,ip4r) ,
+    FUNCTION 1 gip4r_consistent(internal,ip4r,integer) ,
+    FUNCTION 2 gip4r_union(internal,internal) ,
+    FUNCTION 3 gip4r_compress(internal) ,
+    FUNCTION 4 gip4r_decompress(internal) ,
+    FUNCTION 5 gip4r_penalty(internal,internal,internal) ,
+    FUNCTION 6 gip4r_picksplit(internal,internal) ,
+    FUNCTION 7 gip4r_same(ip4r,ip4r,internal);
+
+
+ALTER OPERATOR CLASS public.gist_ip4r_ops USING gist OWNER TO root;
+
+--
+-- Name: hash_ip4_ops; Type: OPERATOR CLASS; Schema: public; Owner: root
+--
+
+CREATE OPERATOR CLASS hash_ip4_ops
+    DEFAULT FOR TYPE ip4 USING hash AS
+    OPERATOR 1 =(ip4,ip4) ,
+    FUNCTION 1 ip4hash(ip4);
+
+
+ALTER OPERATOR CLASS public.hash_ip4_ops USING hash OWNER TO root;
+
+--
+-- Name: hash_ip4r_ops; Type: OPERATOR CLASS; Schema: public; Owner: root
+--
+
+CREATE OPERATOR CLASS hash_ip4r_ops
+    DEFAULT FOR TYPE ip4r USING hash AS
+    OPERATOR 1 =(ip4r,ip4r) ,
+    FUNCTION 1 ip4rhash(ip4r);
+
+
+ALTER OPERATOR CLASS public.hash_ip4r_ops USING hash OWNER TO root;
+
+SET search_path = pg_catalog;
+
+--
+-- Name: CAST (cidr AS public.ip4r); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (cidr AS public.ip4r) WITH FUNCTION public.ip4r(cidr) AS ASSIGNMENT;
+
+
+--
+-- Name: CAST (double precision AS public.ip4); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (double precision AS public.ip4) WITH FUNCTION public.ip4(double precision);
+
+
+--
+-- Name: CAST (inet AS public.ip4); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (inet AS public.ip4) WITH FUNCTION public.ip4(inet) AS ASSIGNMENT;
+
+
+--
+-- Name: CAST (bigint AS public.ip4); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (bigint AS public.ip4) WITH FUNCTION public.ip4(bigint);
+
+
+--
+-- Name: CAST (public.ip4 AS cidr); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (public.ip4 AS cidr) WITH FUNCTION public.cidr(public.ip4) AS ASSIGNMENT;
+
+
+--
+-- Name: CAST (public.ip4 AS double precision); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (public.ip4 AS double precision) WITH FUNCTION public.to_double(public.ip4);
+
+
+--
+-- Name: CAST (public.ip4 AS bigint); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (public.ip4 AS bigint) WITH FUNCTION public.to_bigint(public.ip4);
+
+
+--
+-- Name: CAST (public.ip4 AS public.ip4r); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (public.ip4 AS public.ip4r) WITH FUNCTION public.ip4r(public.ip4) AS IMPLICIT;
+
+
+--
+-- Name: CAST (public.ip4 AS text); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (public.ip4 AS text) WITH FUNCTION public.text(public.ip4);
+
+
+--
+-- Name: CAST (public.ip4r AS cidr); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (public.ip4r AS cidr) WITH FUNCTION public.cidr(public.ip4r);
+
+
+--
+-- Name: CAST (public.ip4r AS text); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (public.ip4r AS text) WITH FUNCTION public.text(public.ip4r);
+
+
+--
+-- Name: CAST (text AS public.ip4); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (text AS public.ip4) WITH FUNCTION public.ip4(text);
+
+
+--
+-- Name: CAST (text AS public.ip4r); Type: CAST; Schema: pg_catalog; Owner: 
+--
+
+CREATE CAST (text AS public.ip4r) WITH FUNCTION public.ip4r(text);
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: asn; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE asn (
+    num integer NOT NULL,
+    name character varying(64),
+    description character varying(255)
+);
+
+
+ALTER TABLE public.asn OWNER TO root;
+
+--
+-- Name: cntry; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE cntry (
+    prefix ip4r NOT NULL,
+    country character varying(2)
+);
+
+ALTER TABLE public.cntry OWNER TO root;
+
+--
+-- Name: iptraf; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE iptraf (
+    iptraf_id bigint NOT NULL,
+    prefix ip4r NOT NULL,
+    aspath character varying(255) NOT NULL,
+    req bigint DEFAULT 0 NOT NULL,
+    bytes bigint DEFAULT 0 NOT NULL,
+    pkt bigint DEFAULT 0 NOT NULL,
+    lost bigint DEFAULT 0 NOT NULL,
+    router_id integer DEFAULT 1 NOT NULL
+);
+
+
+ALTER TABLE public.iptraf OWNER TO root;
+
+--
+-- Name: iptraf_arch; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE iptraf_arch (
+    iptraf_arch_id bigint NOT NULL,
+    prefix ip4r NOT NULL,
+    aspath character varying(255) NOT NULL,
+    req bigint DEFAULT 0 NOT NULL,
+    bytes bigint DEFAULT 0 NOT NULL,
+    pkt bigint DEFAULT 0 NOT NULL,
+    lost bigint DEFAULT 0 NOT NULL,
+    start timestamp with time zone NOT NULL,
+    router_id integer DEFAULT 1 NOT NULL
+);
+
+
+ALTER TABLE public.iptraf_arch OWNER TO root;
+
+--
+-- Name: iptraf_arch_iptraf_arch_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE iptraf_arch_iptraf_arch_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.iptraf_arch_iptraf_arch_id_seq OWNER TO root;
+
+--
+-- Name: iptraf_arch_iptraf_arch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE iptraf_arch_iptraf_arch_id_seq OWNED BY iptraf_arch.iptraf_arch_id;
+
+
+--
+-- Name: iptraf_cn; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE iptraf_cn (
+    dt timestamp with time zone DEFAULT now() NOT NULL,
+    country character varying(2) NOT NULL,
+    mb bigint DEFAULT 0 NOT NULL,
+);
+
+
+ALTER TABLE public.iptraf_cn OWNER TO root;
+
+--
+-- Name: iptraf_dt; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE iptraf_dt (
+    dt timestamp with time zone DEFAULT now() NOT NULL,
+    asn character varying(128) NOT NULL,
+    pathmb bigint DEFAULT 0 NOT NULL,
+    endmb bigint DEFAULT 0 NOT NULL,
+    router_id integer DEFAULT 1 NOT NULL
+);
+
+
+ALTER TABLE public.iptraf_dt OWNER TO root;
+
+--
+-- Name: iptraf_iptraf_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE iptraf_iptraf_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.iptraf_iptraf_id_seq OWNER TO root;
+
+--
+-- Name: iptraf_iptraf_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE iptraf_iptraf_id_seq OWNED BY iptraf.iptraf_id;
+
+
+--
+-- Name: pfxtmp; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE pfxtmp (
+    prefix ip4r,
+    aspath character varying(255),
+    router_id integer
+);
+
+
+ALTER TABLE public.pfxtmp OWNER TO root;
+
+--
+-- Name: router; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE router (
+    router_id integer NOT NULL,
+    name character varying(32),
+    prefix ip4r NOT NULL
+);
+
+
+ALTER TABLE public.router OWNER TO root;
+
+--
+-- Name: iptraf_id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE iptraf ALTER COLUMN iptraf_id SET DEFAULT nextval('iptraf_iptraf_id_seq'::regclass);
+
+
+--
+-- Name: iptraf_arch_id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE iptraf_arch ALTER COLUMN iptraf_arch_id SET DEFAULT nextval('iptraf_arch_iptraf_arch_id_seq'::regclass);
+
+
+--
+-- Name: asn_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+--
+
+ALTER TABLE ONLY asn
+    ADD CONSTRAINT asn_pkey PRIMARY KEY (num);
+
+
+--
+-- Name: iptraf_arch_pkey1; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+--
+
+ALTER TABLE ONLY iptraf_arch
+    ADD CONSTRAINT iptraf_arch_pkey1 PRIMARY KEY (iptraf_arch_id);
+
+
+--
+-- Name: iptraf_dt_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+--
+
+ALTER TABLE ONLY iptraf_dt
+    ADD CONSTRAINT iptraf_dt_pkey PRIMARY KEY (dt, asn, router_id);
+
+
+--
+-- Name: iptraf_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+--
+
+ALTER TABLE ONLY iptraf
+    ADD CONSTRAINT iptraf_pkey PRIMARY KEY (iptraf_id);
+
+
+--
+-- Name: cntry_country; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE INDEX cntry_country ON cntry USING btree (country);
+
+
+--
+-- Name: cntry_prefix_gist; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE INDEX cntry_prefix_gist ON cntry USING gist (prefix);
+
+
+--
+-- Name: iptaf_prefix_gist; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE INDEX iptaf_prefix_gist ON iptraf USING gist (prefix);
+
+
+--
+-- Name: iptraf_arch_prefix_gist2; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE INDEX iptraf_arch_prefix_gist2 ON iptraf_arch USING gist (prefix);
+
+
+--
+-- Name: iptraf_arch_start; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE INDEX iptraf_arch_start ON iptraf_arch USING btree (start);
+
+
+--
+-- Name: iptraf_aspath; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE INDEX iptraf_aspath ON iptraf USING btree (aspath);
+
+
+--
+-- Name: iptraf_cn_country; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE UNIQUE INDEX iptraf_cn_country ON iptraf_cn USING btree (country, dt);
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+COMMIT;
