@@ -21,19 +21,17 @@
 #define TSPORT 8789
 #define TSIP "IP.IP.IP.IP"
 
-
 struct _eventmsg {
-  time_t tm;
-  int unsigned jobid;
-  int unsigned premium;
-  size_t bytessent;
-  int unsigned seconds;
-  int unsigned userid;
-  int unsigned tcpi_total_retrans;
-  int unsigned tcpi_snd_mss;
+  uint64_t tm;
+  uint64_t bytessent;
+  uint32_t ttype;
+  uint32_t seconds;
+  uint32_t tcpi_total_retrans;
+  uint32_t tcpi_snd_mss;
   char ip[256];
   char sign[SHA_DIGEST_LENGTH];
-};
+} __attribute__ ((__packed__)) ;
+
 
 typedef struct ngx_http_log_op_s  ngx_http_log_op_t;
 
