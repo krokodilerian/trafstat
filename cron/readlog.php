@@ -42,7 +42,7 @@ $o16=65536;
 $o8=256;
 
 while (!feof($dwllog)){
-	fscanf($dwllog,"%d %d.%d.%d.%d %ld %d %d %ld %ld %d.%d.%d.%d %ld %ld\n", $crap,$ip[0],$ip[1],$ip[2],$ip[3],$bytes,$crap,$ttype,$retransmits, $mss,$srvip[0],$srvip[1],$srvip[2],$srvip[3],$crap,$crap);
+	fscanf($dwllog,"%d %d.%d.%d.%d %ld %d %d %ld %ld %d.%d.%d.%d\n", $crap,$ip[0],$ip[1],$ip[2],$ip[3],$bytes,$crap,$ttype,$retransmits, $mss,$srvip[0],$srvip[1],$srvip[2],$srvip[3]);
 
 	$packets = (int) ($bytes/$mss);
 	$srvip_i= $srvip[0]*$o24 + $srvip[1]*$o16 + $srvip[2]*$o8 + $srvip[3];
