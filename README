@@ -20,3 +20,4 @@ replace LOGDIR
 
 replace INSTDIR
 
+replace IP.IP.IP.IP with the ip of the server that will listen
