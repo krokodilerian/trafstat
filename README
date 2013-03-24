@@ -1,0 +1,22 @@
+Install postgres, dev
+
+Install ip4r http://pgfoundry.org/projects/ip4r/
+
+create a database (ipr)
+
+as postgres, load the ip4r type
+psql -U postgres < ip4r.sql
+
+create a database, load the ipr.schema
+psql ipr < ipr.schema
+
+install quagga
+give someone access to the quaggavty and quagga groups to run bgpupd from
+configure bgp neighbor
+
+replace SOMESECRET
+
+replace LOGDIR
+
+replace INSTDIR
+
