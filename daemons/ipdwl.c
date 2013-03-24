@@ -5,7 +5,6 @@
 #include <netinet/in.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
-#include <mysql/mysql.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -31,17 +30,15 @@
 #define EVENT_DWLFINISH 3
 
 struct _eventmsg {
-  time_t tm;
-  int unsigned jobid;
-  int unsigned premium;
-  size_t bytessent;
-  int unsigned seconds;
-  int unsigned userid;
-  int unsigned tcpi_total_retrans;
-  int unsigned tcpi_snd_mss;
+  uint64_t tm;
+  uint64_t bytessent;
+  uint32_t ttype;
+  uint32_t seconds;
+  uint32_t tcpi_total_retrans;
+  uint32_t tcpi_snd_mss;
   char ip[256];
   char sign[SHA_DIGEST_LENGTH];
-};
+} __attribute__ ((__packed__)) ;
 
 struct _peventmsg {
   struct _peventmsg *next;
@@ -142,7 +139,7 @@ void *receive_thread(void *ptr){
       continue;
     }
     strcpy(pmsg->ip, inet_ntoa(serv.sin_addr));
-    fprintf(hfl_log, "%ld %s %lu %u %u %u %u %s %u %u\n", pmsg->msg.tm, pmsg->msg.ip, pmsg->msg.bytessent, pmsg->msg.seconds, pmsg->msg.premium, pmsg->msg.tcpi_total_retrans, pmsg->msg.tcpi_snd_mss, pmsg->ip, pmsg->msg.userid, pmsg->msg.jobid);
+    fprintf(hfl_log, "%ld %s %lu %u %u %u %u %s\n", pmsg->msg.tm, pmsg->msg.ip, pmsg->msg.bytessent, pmsg->msg.seconds, pmsg->msg.ttype, pmsg->msg.tcpi_total_retrans, pmsg->msg.tcpi_snd_mss, pmsg->ip);
 
     free(pmsg);
   }
