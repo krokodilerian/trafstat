@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <pthread.h>
+#include <endian.h>
 
 #define TSPORT 8789
 #define TSIP "0.0.0.0"
@@ -139,7 +140,9 @@ void *receive_thread(void *ptr){
       continue;
     }
     strcpy(pmsg->ip, inet_ntoa(serv.sin_addr));
-    fprintf(hfl_log, "%ld %s %lu %u %u %u %u %s\n", pmsg->msg.tm, pmsg->msg.ip, pmsg->msg.bytessent, pmsg->msg.seconds, pmsg->msg.ttype, pmsg->msg.tcpi_total_retrans, pmsg->msg.tcpi_snd_mss, pmsg->ip);
+    fprintf(hfl_log, "%ld %s %lu %u %u %u %u %s\n", 
+                      le64toh(pmsg->msg.tm), pmsg->msg.ip, le64toh(pmsg->msg.bytessent), le32toh(pmsg->msg.seconds), 
+                      le32toh(pmsg->msg.ttype), le32toh(pmsg->msg.tcpi_total_retrans), le32toh(pmsg->msg.tcpi_snd_mss), pmsg->ip);
 
     free(pmsg);
   }

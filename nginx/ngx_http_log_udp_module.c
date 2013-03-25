@@ -13,6 +13,8 @@
 
 #include <openssl/sha.h>
 
+#include <endian.h>
+
 #define SHA_DIGEST_LENGTH 20
 #define MD5_DIGEST_LENGTH 16
 
@@ -231,11 +233,11 @@ ngx_http_log_udp_handler(ngx_http_request_t *r)
 
     memset(&msg, 0, sizeof(msg));
 
-    msg.tm = ngx_time();
-    msg.bytessent = r->connection->sent - bytesunsent;
-    msg.tcpi_total_retrans = tcp.tcpi_total_retrans;
-    msg.tcpi_snd_mss = tcp.tcpi_snd_mss; 
-    msg.seconds = msg.tm - r->start_sec;
+    msg.tm = htole64(ngx_time());
+    msg.bytessent = htole64(r->connection->sent - bytesunsent);
+    msg.tcpi_total_retrans = htole32(tcp.tcpi_total_retrans);
+    msg.tcpi_snd_mss = htole32(tcp.tcpi_snd_mss); 
+    msg.seconds = htole32(msg.tm - r->start_sec);
 
 
     sock_ntop(r->connection->sockaddr, r->connection->socklen, msg.ip, 255);
