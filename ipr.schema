@@ -1678,6 +1678,11 @@ CREATE TABLE iptraf_cn (
     dt timestamp with time zone DEFAULT now() NOT NULL,
     country character varying(2) NOT NULL,
     mb bigint DEFAULT 0 NOT NULL,
+    router_id integer DEFAULT 1 NOT NULL,
+    traffic_id integer DEFAULT 0 NOT NULL,
+    pkt bigint DEFAULT 0 NOT NULL,
+    lost bigint DEFAULT 0 NOT NULL,
+    peer integer DEFAULT 7366 NOT NULL
 );
 
 
@@ -1776,6 +1781,14 @@ ALTER TABLE ONLY iptraf_arch
 
 
 --
+-- Name: iptraf_cn_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+--
+
+ALTER TABLE ONLY iptraf_cn
+    ADD CONSTRAINT iptraf_cn_pkey PRIMARY KEY (dt, country, peer, router_id, traffic_id);
+
+
+--
 -- Name: iptraf_dt_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
 --
 
@@ -1832,12 +1845,6 @@ CREATE INDEX iptraf_arch_start ON iptraf_arch USING btree (start);
 
 CREATE INDEX iptraf_aspath ON iptraf USING btree (aspath);
 
-
---
--- Name: iptraf_cn_country; Type: INDEX; Schema: public; Owner: root; Tablespace: 
---
-
-CREATE UNIQUE INDEX iptraf_cn_country ON iptraf_cn USING btree (country, dt);
 
 --
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
